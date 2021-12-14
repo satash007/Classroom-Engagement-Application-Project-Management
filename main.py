@@ -35,7 +35,7 @@ storage = firebase.storage()
 st.sidebar.title("Classroom Engagement Application")
 
 # Authentication
-choice = st.sidebar.selectbox('login/Signup', ['Login', 'Sign up'])
+choice = st.sidebar.selectbox('login/Signup', ['Login', 'Sign Up'])
 
 # Obtain User Input for email and password
 email = st.sidebar.text_input('Please enter your email address')
