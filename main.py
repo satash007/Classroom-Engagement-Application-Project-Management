@@ -44,7 +44,7 @@ password = st.sidebar.text_input('Please enter your password',type = 'password')
 # App 
 
 # Sign up Block
-if choice == 'Sign up':
+if choice == 'Sign Up':
     handle = st.sidebar.text_input(
         'Please input your app handle name', value='Default')
     submit = st.sidebar.button('Create my account')
