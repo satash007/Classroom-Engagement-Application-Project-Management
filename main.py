@@ -74,7 +74,7 @@ if choice == 'Sign Up':
 
 # Login Block
 if choice == 'Login':
-    login = st.sidebar.button('Login')
+    login = st.sidebar.checkbox('Login')
     if login:
         user = auth.sign_in_with_email_and_password(email,password)
         st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
@@ -91,31 +91,35 @@ if choice == 'Login':
                 for img in Image.each():
                     img_choice = img.val()
                     #st.write(img_choice)
-                st.image(img_choice)
-                exp = st.beta_expander('Change Bio and Image')  
+                st.image(img_choice, width=300)
+                exp = st.expander('Change Bio and Image')  
                 # User plan to change profile picture  
                 with exp:
-                    newImgPath = st.text_input('Enter full path of your profile imgae')
+                    #newImgPath = st.text_input('Enter full path of your profile imgae')
+                    newImgPath = st.file_uploader("Upload File",type=['png','jpg'])
                     upload_new = st.button('Upload')
                     if upload_new:
                         uid = user['localId']
-                        fireb_upload = storage.child(uid).put(newImgPath,user['idToken'])
+                        fireb_upload = storage.child(uid).put(newImgPath.getvalue(),user['idToken'])
                         a_imgdata_url = storage.child(uid).get_url(fireb_upload['downloadTokens']) 
                         db.child(user['localId']).child("Image").push(a_imgdata_url)
-                        st.success('Success!')           
+                        st.success('Success!') 
             # IF THERE IS NO IMAGE
             else:    
                 st.info("No profile picture yet")
-                newImgPath = st.text_input('Enter full path of your profile image')
+                #newImgPath = st.text_input('Enter full path of your profile image')
+                newImgPath = st.file_uploader("Upload File",type=['png','jpg'])
                 upload_new = st.button('Upload')
                 if upload_new:
                     uid = user['localId']
                     # Stored Initated Bucket in Firebase
-                    fireb_upload = storage.child(uid).put(newImgPath,user['idToken'])
+                    fireb_upload = storage.child(uid).put(newImgPath.getvalue(),user['idToken'])
                     # Get the url for easy access
                     a_imgdata_url = storage.child(uid).get_url(fireb_upload['downloadTokens']) 
                     # Put it in our real time database
                     db.child(user['localId']).child("Image").push(a_imgdata_url)
+ 
+ 
  # HOME PAGE
         elif bio == 'Home':
             col1, col2 = st.columns(2)
