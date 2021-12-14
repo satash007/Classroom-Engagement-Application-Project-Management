@@ -2,6 +2,13 @@
 import pyrebase
 import streamlit as st
 from datetime import datetime
+from PIL import Image
+
+# Load the fav icon image from the res folder in project
+img = Image.open('res/videoconference.png')
+
+# Config function
+st.set_page_config(page_title='Classroom Engagement Application', page_icon=img)
 
 
 # Configuration Key
@@ -32,10 +39,15 @@ auth = firebase.auth()
 # Database
 db = firebase.database()
 storage = firebase.storage()
-st.sidebar.title("Classroom Engagement Application")
+#st.sidebar.title("Classroom Engagement Application")
+
+st.sidebar.image(
+    "res/CEA-Sidebar-Image-white-txt.png",
+    width=300
+)
 
 # Authentication
-choice = st.sidebar.selectbox('login/Signup', ['Login', 'Sign Up'])
+choice = st.sidebar.selectbox('Please Login/Signup to continue...', ['Login', 'Sign Up'])
 
 # Obtain User Input for email and password
 email = st.sidebar.text_input('Please enter your email address')
@@ -57,7 +69,7 @@ if choice == 'Sign Up':
         user = auth.sign_in_with_email_and_password(email, password)
         db.child(user['localId']).child("Handle").set(handle)
         db.child(user['localId']).child("ID").set(user['localId'])
-        st.title('Welcome' + handle)
+        st.title('Welcome ' + handle + '!')
         st.info('Login via login drop down selection')
 
 # Login Block
@@ -106,7 +118,7 @@ if choice == 'Login':
                     db.child(user['localId']).child("Image").push(a_imgdata_url)
  # HOME PAGE
         elif bio == 'Home':
-            col1, col2 = st.beta_columns(2)
+            col1, col2 = st.columns(2)
             
             # col for Profile picture
             with col1:
