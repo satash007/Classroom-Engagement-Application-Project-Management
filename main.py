@@ -22,6 +22,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+
 # Configuration Key
 firebaseConfig = {
     'apiKey': "AIzaSyDm9i_Wbq737WWGapfpVVz27vu7mg3Tqhs",
