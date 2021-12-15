@@ -4,7 +4,6 @@ import streamlit as st
 from datetime import datetime
 from PIL import Image
 
-
 # Load the fav icon image from the res folder in project
 img = Image.open('res/videoconference.png')
 
