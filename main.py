@@ -15,7 +15,7 @@ st.markdown(
     """
     <style>
     .reportview-container {
-        background: url("https://github.com/satash007/Classroom-Engagement-Application-Project-Management/blob/main/res/bg_img_main.jpg")
+        background: url("https://github.com/satash007/Classroom-Engagement-Application-Project-Management/blob/main/res/bg_img_main.jpg?raw=true")
     }
     </style>
     """,
