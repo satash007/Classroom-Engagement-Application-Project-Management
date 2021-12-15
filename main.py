@@ -101,14 +101,14 @@ elif user_type_choice == 'Host/Teacher':
 
         if submit:
             user = auth.create_user_with_email_and_password(email, password)
-            st.sidebar.success('Your account is created successfully!')
+            st.sidebar.success('Your account was created successfully!')
             st.balloons()
             # Sign in
             user = auth.sign_in_with_email_and_password(email, password)
             db.child(user['localId']).child("Handle").set(handle)
             db.child(user['localId']).child("ID").set(user['localId'])
             st.title('Welcome ' + handle + '!')
-            st.info('Login via login drop down selection')
+            st.info('Thank you for creating an account. To proceed, please login with the credentials chosen.')
 
     # Login Block
     if choice == 'Login':
