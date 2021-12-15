@@ -5,11 +5,22 @@ from datetime import datetime
 from PIL import Image
 
 # Load the fav icon image from the res folder in project
-img = Image.open('res/videoconference.png')
+img = Image.open('res/videoconference2.png')
 
 # Config function
 st.set_page_config(page_title='Classroom Engagement Application', page_icon=img)
 
+#Set background image
+st.markdown(
+    """
+    <style>
+    .reportview-container {
+        background: url("https://www.utep.edu/extendeduniversity/utepconnect/blog/january-2017/4-ways-to-thrive-in-your-online-classes.jpg")
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 # Configuration Key
 firebaseConfig = {
@@ -32,6 +43,21 @@ hide_menu_style= """
     """
 st.markdown(hide_menu_style, unsafe_allow_html=True)
 
+#Modify default attributes for alert elements
+st.markdown(
+    """
+    <style>
+        .stAlert {
+            background-color: white;
+            opacity: 0.8;
+        }
+        .stAlert:hover {
+        opacity: 1.0;
+        }
+    </style>""",
+    unsafe_allow_html=True,
+)
+
 # Firebase Authentication
 firebase = pyrebase.initialize_app(firebaseConfig)
 auth = firebase.auth()
@@ -39,160 +65,173 @@ auth = firebase.auth()
 # Database
 db = firebase.database()
 storage = firebase.storage()
-#st.sidebar.title("Classroom Engagement Application")
+st.sidebar.title("Welcome!")
 
 st.sidebar.image(
-    "res/CEA-Sidebar-Image-white-txt.png",
+    "res/CEA-Sidebar-Image-white-txt2.png",
     width=300
 )
 
-# Authentication
-choice = st.sidebar.selectbox('Please Login/Signup to continue...', ['Login', 'Sign Up'])
+#Define the user types
+user_types = ['Student', 'Host/Teacher']
 
-# Obtain User Input for email and password
-email = st.sidebar.text_input('Please enter your email address')
-password = st.sidebar.text_input('Please enter your password',type = 'password')
+user_type_choice = st.sidebar.radio('I would like to use this application as a...', user_types)
 
-# App 
+#st.sidebar.markdown("[![Foo](http://www.google.com.au/images/nav_logo7.png)](http://google.com.au/)")
 
-# Sign up Block
-if choice == 'Sign Up':
-    handle = st.sidebar.text_input(
-        'Please input your app handle name', value='Default')
-    submit = st.sidebar.button('Create my account')
+if user_type_choice == 'Student':
+    student_name = st.sidebar.text_input('Please enter your full name')
+    student_ID = st.sidebar.text_input('Please enter your student ID')
+    session_code = st.sidebar.text_input('Please enter the session code')
+    connectBtn = st.sidebar.button("Connect to Session")
 
-    if submit:
-        user = auth.create_user_with_email_and_password(email, password)
-        st.success('Your account is created suceesfully!')
-        st.balloons()
-        # Sign in
-        user = auth.sign_in_with_email_and_password(email, password)
-        db.child(user['localId']).child("Handle").set(handle)
-        db.child(user['localId']).child("ID").set(user['localId'])
-        st.title('Welcome ' + handle + '!')
-        st.info('Login via login drop down selection')
+elif user_type_choice == 'Host/Teacher':
+    # Authentication
+    choice = st.sidebar.selectbox('Please Login/Signup to continue...', ['Login', 'Sign Up'])
 
-# Login Block
-if choice == 'Login':
-    login = st.sidebar.checkbox('Login')
-    if login:
-        user = auth.sign_in_with_email_and_password(email,password)
-        st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-        bio = st.radio('Jump to',['Home','Workplace Feeds', 'Settings'])
-        
-# SETTINGS PAGE 
-        if bio == 'Settings':  
-            # CHECK FOR IMAGE
-            nImage = db.child(user['localId']).child("Image").get().val()    
-            # IMAGE FOUND     
-            if nImage is not None:
-                # We plan to store all our image under the child image
-                Image = db.child(user['localId']).child("Image").get()
-                for img in Image.each():
-                    img_choice = img.val()
-                    #st.write(img_choice)
-                st.image(img_choice, width=300)
-                exp = st.expander('Change Bio and Image')  
-                # User plan to change profile picture  
-                with exp:
-                    #newImgPath = st.text_input('Enter full path of your profile imgae')
+    # Obtain User Input for email and password
+    email = st.sidebar.text_input('Please enter your email address')
+    password = st.sidebar.text_input('Please enter your password',type = 'password')
+
+    # Sign up Block
+    if choice == 'Sign Up':
+        handle = st.sidebar.text_input('Please enter your full name')
+        submit = st.sidebar.button('Create Host Account')
+
+        if submit:
+            user = auth.create_user_with_email_and_password(email, password)
+            st.sidebar.success('Your account is created successfully!')
+            st.balloons()
+            # Sign in
+            user = auth.sign_in_with_email_and_password(email, password)
+            db.child(user['localId']).child("Handle").set(handle)
+            db.child(user['localId']).child("ID").set(user['localId'])
+            st.title('Welcome ' + handle + '!')
+            st.info('Login via login drop down selection')
+
+    # Login Block
+    if choice == 'Login':
+        login = st.sidebar.checkbox('Login')
+        if login:
+            user = auth.sign_in_with_email_and_password(email, password)
+            st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
+            bio = st.radio('Jump to',['Home','Workplace Feeds', 'Settings'])
+            st.sidebar.success('Successfully authenticated...Welcome '+ email + '!')
+            st.balloons()
+            
+    # SETTINGS PAGE 
+            if bio == 'Settings':  
+                # CHECK FOR IMAGE
+                nImage = db.child(user['localId']).child("Image").get().val()    
+                # IMAGE FOUND     
+                if nImage is not None:
+                    # We plan to store all our image under the child image
+                    Image = db.child(user['localId']).child("Image").get()
+                    for img in Image.each():
+                        img_choice = img.val()
+                        #st.write(img_choice)
+                    st.image(img_choice, width=300)
+                    exp = st.expander('Change Bio and Image')  
+                    # User plan to change profile picture  
+                    with exp:
+                        #newImgPath = st.text_input('Enter full path of your profile imgae')
+                        newImgPath = st.file_uploader("Upload File",type=['png','jpg'])
+                        upload_new = st.button('Upload')
+                        if upload_new:
+                            uid = user['localId']
+                            fireb_upload = storage.child(uid).put(newImgPath.getvalue(),user['idToken'])
+                            a_imgdata_url = storage.child(uid).get_url(fireb_upload['downloadTokens']) 
+                            db.child(user['localId']).child("Image").push(a_imgdata_url)
+                            st.success('Success!') 
+                # IF THERE IS NO IMAGE
+                else:    
+                    st.info("No profile picture yet")
+                    #newImgPath = st.text_input('Enter full path of your profile image')
                     newImgPath = st.file_uploader("Upload File",type=['png','jpg'])
                     upload_new = st.button('Upload')
                     if upload_new:
                         uid = user['localId']
+                        # Stored Initated Bucket in Firebase
                         fireb_upload = storage.child(uid).put(newImgPath.getvalue(),user['idToken'])
+                        # Get the url for easy access
                         a_imgdata_url = storage.child(uid).get_url(fireb_upload['downloadTokens']) 
+                        # Put it in our real time database
                         db.child(user['localId']).child("Image").push(a_imgdata_url)
-                        st.success('Success!') 
-            # IF THERE IS NO IMAGE
-            else:    
-                st.info("No profile picture yet")
-                #newImgPath = st.text_input('Enter full path of your profile image')
-                newImgPath = st.file_uploader("Upload File",type=['png','jpg'])
-                upload_new = st.button('Upload')
-                if upload_new:
-                    uid = user['localId']
-                    # Stored Initated Bucket in Firebase
-                    fireb_upload = storage.child(uid).put(newImgPath.getvalue(),user['idToken'])
-                    # Get the url for easy access
-                    a_imgdata_url = storage.child(uid).get_url(fireb_upload['downloadTokens']) 
-                    # Put it in our real time database
-                    db.child(user['localId']).child("Image").push(a_imgdata_url)
- 
- 
- # HOME PAGE
-        elif bio == 'Home':
-            col1, col2 = st.columns(2)
-            
-            # col for Profile picture
-            with col1:
-                nImage = db.child(user['localId']).child("Image").get().val()         
-                if nImage is not None:
-                    val = db.child(user['localId']).child("Image").get()
-                    for img in val.each():
-                        img_choice = img.val()
-                    st.image(img_choice,use_column_width=True)
-                else:
-                    st.info("No profile picture yet. Go to Edit Profile and choose one!")
+    
+    
+    # HOME PAGE
+            elif bio == 'Home':
+                col1, col2 = st.columns(2)
                 
-                post = st.text_input("Let's share my current mood as a post!",max_chars = 100)
-                add_post = st.button('Share Posts')
-            if add_post:   
-                now = datetime.now()
-                dt_string = now.strftime("%d/%m/%Y %H:%M:%S")              
-                post = {'Post:' : post,
-                        'Timestamp' : dt_string}                           
-                results = db.child(user['localId']).child("Posts").push(post)
-                st.balloons()
+                # col for Profile picture
+                with col1:
+                    nImage = db.child(user['localId']).child("Image").get().val()         
+                    if nImage is not None:
+                        val = db.child(user['localId']).child("Image").get()
+                        for img in val.each():
+                            img_choice = img.val()
+                        st.image(img_choice,use_column_width=True)
+                    else:
+                        st.info("No profile picture yet. Go to Edit Profile and choose one!")
+                    
+                    post = st.text_input("Let's share my current mood as a post!",max_chars = 100)
+                    add_post = st.button('Share Posts')
+                if add_post:   
+                    now = datetime.now()
+                    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")              
+                    post = {'Post:' : post,
+                            'Timestamp' : dt_string}                           
+                    results = db.child(user['localId']).child("Posts").push(post)
+                    st.balloons()
 
-            # This coloumn for the post Display
-            with col2:
-                
-                all_posts = db.child(user['localId']).child("Posts").get()
-                if all_posts.val() is not None:    
-                    for Posts in reversed(all_posts.each()):
-                            #st.write(Posts.key()) # Morty
-                            st.code(Posts.val(),language = '') 
-   # WORKPLACE FEED PAGE
-        else:
-            all_users = db.get()
-            res = []
-            # Store all the users handle name
-            for users_handle in all_users.each():
-                k = users_handle.val()["Handle"]
-                res.append(k)
-            # Total users
-            nl = len(res)
-            st.write('Total users here: '+ str(nl)) 
-            
-            # Allow the user to choose which other user he/she wants to see 
-            choice = st.selectbox('My Collegues',res)
-            push = st.button('Show Profile')
-            
-            # Show the choosen Profile
-            if push:
+                # This coloumn for the post Display
+                with col2:
+                    
+                    all_posts = db.child(user['localId']).child("Posts").get()
+                    if all_posts.val() is not None:    
+                        for Posts in reversed(all_posts.each()):
+                                #st.write(Posts.key()) # Morty
+                                st.code(Posts.val(),language = '') 
+    # WORKPLACE FEED PAGE
+            else:
+                all_users = db.get()
+                res = []
+                # Store all the users handle name
                 for users_handle in all_users.each():
                     k = users_handle.val()["Handle"]
-                    # 
-                    if k == choice:
-                        lid = users_handle.val()["ID"]
-                        
-                        handlename = db.child(lid).child("Handle").get().val()             
-                        
-                        st.markdown(handlename, unsafe_allow_html=True)
-                        
-                        nImage = db.child(lid).child("Image").get().val()         
-                        if nImage is not None:
-                            val = db.child(lid).child("Image").get()
-                            for img in val.each():
-                                img_choice = img.val()
-                                st.image(img_choice)
-                        else:
-                            st.info("No profile picture yet. Go to Edit Profile and choose one!")
- 
-                        # All posts
-                        all_posts = db.child(lid).child("Posts").get()
-                        if all_posts.val() is not None:    
-                            for Posts in reversed(all_posts.each()):
-                                st.code(Posts.val(),language = '')
+                    res.append(k)
+                # Total users
+                nl = len(res)
+                st.write('Total users here: '+ str(nl)) 
+                
+                # Allow the user to choose which other user he/she wants to see 
+                choice = st.selectbox('My Collegues',res)
+                push = st.button('Show Profile')
+                
+                # Show the choosen Profile
+                if push:
+                    for users_handle in all_users.each():
+                        k = users_handle.val()["Handle"]
+                        # 
+                        if k == choice:
+                            lid = users_handle.val()["ID"]
+                            
+                            handlename = db.child(lid).child("Handle").get().val()             
+                            
+                            st.markdown(handlename, unsafe_allow_html=True)
+                            
+                            nImage = db.child(lid).child("Image").get().val()         
+                            if nImage is not None:
+                                val = db.child(lid).child("Image").get()
+                                for img in val.each():
+                                    img_choice = img.val()
+                                    st.image(img_choice)
+                            else:
+                                st.info("No profile picture yet. Go to Edit Profile and choose one!")
+    
+                            # All posts
+                            all_posts = db.child(lid).child("Posts").get()
+                            if all_posts.val() is not None:    
+                                for Posts in reversed(all_posts.each()):
+                                    st.code(Posts.val(),language = '')
 
