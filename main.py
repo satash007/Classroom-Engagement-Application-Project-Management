@@ -15,7 +15,7 @@ st.markdown(
     """
     <style>
     .reportview-container {
-        background: url("https://www.utep.edu/extendeduniversity/utepconnect/blog/january-2017/4-ways-to-thrive-in-your-online-classes.jpg")
+        background: url("https://github.com/satash007/Classroom-Engagement-Application-Project-Management/blob/main/res/bg_img_main.jpg")
     }
     </style>
     """,
