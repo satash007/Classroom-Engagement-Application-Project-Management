@@ -11,6 +11,7 @@ img = Image.open('res/videoconference.png')
 st.set_page_config(page_title='Classroom Engagement Application', page_icon=img)
 
 
+
 # Configuration Key
 firebaseConfig = {
     'apiKey': "AIzaSyDm9i_Wbq737WWGapfpVVz27vu7mg3Tqhs",
