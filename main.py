@@ -119,6 +119,17 @@ elif user_type_choice == 'Host/Teacher':
             bio = st.radio('Jump to',['Home','Workplace Feeds', 'Settings'])
             st.sidebar.success('Successfully authenticated...Welcome '+ email + '!')
             st.balloons()
+            #Set background image
+            st.markdown(
+                """
+                <style>
+                .reportview-container {
+                    background: url("https://github.com/satash007/Classroom-Engagement-Application-Project-Management/blob/main/res/bg_img_dark.jpg?raw=true")
+                }
+                </style>
+                """,
+                unsafe_allow_html=True
+            )
             
     # SETTINGS PAGE 
             if bio == 'Settings':  
