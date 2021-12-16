@@ -85,66 +85,83 @@ if user_type_choice == 'Student':
     student_name = st.sidebar.text_input('Please enter your full name')
     student_ID = st.sidebar.text_input('Please enter your student ID')
     session_code = st.sidebar.text_input('Please enter the session code')
-    connectBtn = st.sidebar.button("Connect to Session")
-    
-    """## Share Your Impression""" 
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        feeling = st.radio('How are you feeling?',['😊Happy','🤔Confused', '😲Wow', '😂Amused', '😞Sad', '🧐Inquisitive', '😠Angry'])
-        
-    with col2:
-        if feeling == '😊Happy':
-            st.markdown('<h3 style="color: white; padding: 0">I\'m feeling Happy</h3>',
-                            unsafe_allow_html=True)
-            st.image("https://media.giphy.com/media/QWvra259h4LCvdJnxP/giphy.gif", width=150)
+    connectBtn = st.sidebar.checkbox("Connect to Session")
 
-        if feeling == '🤔Confused':
-            st.markdown('<h3 style="color: white; padding: 0">I\'m feeling Confused</h3>',
-                            unsafe_allow_html=True)
-            st.image("https://media.giphy.com/media/USUIWSteF8DJoc5Snd/giphy.gif", width=150)
-    
-        if feeling == '😲Wow':
-            st.markdown('<h3 style="color: white; padding: 0">I\'m feeling Wowed</h3>',
-                            unsafe_allow_html=True)
-            st.image("https://media.giphy.com/media/WprjTWyCWtfbJ11WEM/giphy.gif", width=150)
-        
-        if feeling == '😂Amused':
-            st.markdown('<h3 style="color: white; padding: 0">I\'m feeling Amused</h3>',
-                            unsafe_allow_html=True)
-            st.image("https://media.giphy.com/media/QX1vLPZxlUh1bzbgbq/giphy.gif", width=150)
-    
-        if feeling == '😞Sad':
-            st.markdown('<h3 style="color: white; padding: 0">I\'m feeling Sad</h3>',
-                            unsafe_allow_html=True)
-            st.image("https://media.giphy.com/media/IzcFv6WJ4310bDeGjo/giphy.gif", width=150)
-    
-        if feeling == '🧐Inquisitive':
-            st.markdown('<h3 style="color: white; padding: 0">I\'m feeling Inquisitive</h3>',
-                            unsafe_allow_html=True)
-            st.image("https://media.giphy.com/media/cOiuXv4agUAEa4EosP/giphy.gif", width=150)
-    
-        if feeling == '😠Angry':
-            st.markdown('<h3 style="color: white; padding: 0">I\'m feeling Angry</h3>',
-                            unsafe_allow_html=True)
-            st.image("https://media.giphy.com/media/j5E5qvtLDTfmHbT84Y/giphy.gif", width=150)
-    
+    if connectBtn:
+        st.sidebar.success('Connected...Welcome '+ student_name + '!')
+        #Set background image
+        st.markdown(
+            """
+            <style>
+            .reportview-container {
+                background: url("https://github.com/satash007/Classroom-Engagement-Application-Project-Management/blob/main/res/bg_img_dark.jpg?raw=true")
+            }
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
 
-    choice = st.button('Submit Impression')
-    if choice:
-        now = datetime.now()
-        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")              
-        impression = {'Feeling' : feeling,
-                'Timestamp' : dt_string}  
-        
-        studentInfo = {
-        'Student ID': student_ID,
-        'Student Name': student_name,
-        'Session Code': session_code,
-        'Impression': impression
-        }
-
-        db.child("Students").push(studentInfo)
         st.balloons()
+    
+        """## Share Your Impression""" 
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            feeling = st.radio('How are you feeling?',['😊Happy','🤔Confused', '😲Wow', '😂Amused', '😞Sad', '🧐Inquisitive', '😠Angry'])
+            
+        with col2:
+            if feeling == '😊Happy':
+                st.markdown('<h3 style="color: white; padding: 0">I\'m feeling Happy</h3>',
+                                unsafe_allow_html=True)
+                st.image("https://media.giphy.com/media/QWvra259h4LCvdJnxP/giphy.gif", width=150)
+
+            if feeling == '🤔Confused':
+                st.markdown('<h3 style="color: white; padding: 0">I\'m feeling Confused</h3>',
+                                unsafe_allow_html=True)
+                st.image("https://media.giphy.com/media/USUIWSteF8DJoc5Snd/giphy.gif", width=150)
+        
+            if feeling == '😲Wow':
+                st.markdown('<h3 style="color: white; padding: 0">I\'m feeling Wowed</h3>',
+                                unsafe_allow_html=True)
+                st.image("https://media.giphy.com/media/WprjTWyCWtfbJ11WEM/giphy.gif", width=150)
+            
+            if feeling == '😂Amused':
+                st.markdown('<h3 style="color: white; padding: 0">I\'m feeling Amused</h3>',
+                                unsafe_allow_html=True)
+                st.image("https://media.giphy.com/media/QX1vLPZxlUh1bzbgbq/giphy.gif", width=150)
+        
+            if feeling == '😞Sad':
+                st.markdown('<h3 style="color: white; padding: 0">I\'m feeling Sad</h3>',
+                                unsafe_allow_html=True)
+                st.image("https://media.giphy.com/media/IzcFv6WJ4310bDeGjo/giphy.gif", width=150)
+        
+            if feeling == '🧐Inquisitive':
+                st.markdown('<h3 style="color: white; padding: 0">I\'m feeling Inquisitive</h3>',
+                                unsafe_allow_html=True)
+                st.image("https://media.giphy.com/media/cOiuXv4agUAEa4EosP/giphy.gif", width=150)
+        
+            if feeling == '😠Angry':
+                st.markdown('<h3 style="color: white; padding: 0">I\'m feeling Angry</h3>',
+                                unsafe_allow_html=True)
+                st.image("https://media.giphy.com/media/j5E5qvtLDTfmHbT84Y/giphy.gif", width=150)
+        
+
+        choice = st.button('Submit Impression')
+        if choice:
+            now = datetime.now()
+            dt_string = now.strftime("%d/%m/%Y %H:%M:%S")              
+            impression = {'Feeling' : feeling,
+                    'Timestamp' : dt_string}  
+            
+            studentInfo = {
+            'Student ID': student_ID,
+            'Student Name': student_name,
+            'Session Code': session_code,
+            'Impression': impression
+            }
+
+            db.child("Students").push(studentInfo)
+    else:
+        st.sidebar.info('Status: Not Connected.')        
 
 elif user_type_choice == 'Host/Teacher':
     # Authentication
@@ -166,7 +183,7 @@ elif user_type_choice == 'Host/Teacher':
             # Sign in
             user = auth.sign_in_with_email_and_password(email, password)
             db.child("Hosts").child(user['localId']).child("fullName").set(name)
-            db.child(user['localId']).child("ID").set(user['localId'])
+            db.child("Hosts").child(user['localId']).child("ID").set(user['localId'])
             st.title('Welcome ' + name + '!')
             st.info('Thank you for creating an account. To proceed, please login with the credentials chosen.')
 
@@ -268,7 +285,7 @@ elif user_type_choice == 'Host/Teacher':
                                 st.code(Posts.val(),language = '') 
     # WORKPLACE FEED PAGE
             else:
-                all_users = db.get()
+                all_users = db.child("Hosts").get()
                 res = []
                 # Store all the users full name
                 for username in all_users.each():
