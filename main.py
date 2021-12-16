@@ -227,7 +227,8 @@ elif user_type_choice == 'Host/Teacher':
             user = auth.sign_in_with_email_and_password(email, password)
             db.child("Hosts").child(user['localId']).child("fullName").set(name)
             db.child("Hosts").child(user['localId']).child("ID").set(user['localId'])
-            st.title('Welcome ' + name + '!')
+            host_name = db.child("Hosts").child(user['localId']).child("fullName").get().key() 
+            st.title('Welcome ' + host_name + '!')
             st.info('Thank you for creating an account. To proceed, please login with the credentials chosen.')
 
     # Login Block
@@ -241,8 +242,9 @@ elif user_type_choice == 'Host/Teacher':
             #if user['localId'] is None:
                 #st.sidebar.success('Incorrect login details entered. Please try again.')    
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-            page = st.radio('Jump to',['Home', 'Create Session', 'View Analytics', 'Settings'])
-            st.sidebar.success('Connected...Welcome '+ email + '!')
+            page = st.radio('Go to',['Home', 'Create Session', 'View Analytics', 'Settings'])
+            host_name = db.child("Hosts").child(user['localId']).child("fullName").get().key() 
+            st.sidebar.success('Connected...Welcome '+ host_name + '!')
             
             # only display balloons animation once using Session State
             if st.session_state.firstConnect == 0:
@@ -303,7 +305,7 @@ elif user_type_choice == 'Host/Teacher':
     
     # HOME PAGE
             elif page == 'Home':
-                st.title('Hi ' + email)
+                st.title('Hi ' + host_name + '!')
                 col1, col2 = st.columns(2)
                 # col for Profile picture
                 with col1:
@@ -341,7 +343,8 @@ elif user_type_choice == 'Host/Teacher':
                     
                     dt_string = session_date.strftime("%d/%m/%Y %H:%M:%S")
                     ts_string = session_time_start.strftime("%H:%M:%S")  
-                    te_string = session_time_end.strftime("%H:%M:%S")  
+                    te_string = session_time_end.strftime("%H:%M:%S") 
+                    host_name = db.child("Hosts").child(user['localId']).child("fullName").get().key() 
                     sessionInfo = {
                     'Session Code': session_code,
                     'Session Name': session_name,
@@ -349,7 +352,9 @@ elif user_type_choice == 'Host/Teacher':
 
                     'Session Date': dt_string,
                     'Session Time Start': ts_string,
-                    'Session Time End': te_string
+                    'Session Time End': te_string,
+                    'Host' : host_name,
+                    'Host Email': email
                     }
                     db.child("Sessions").push(sessionInfo)
                     st.success('Session(' + session_code + ') Created Successfully!')  
