@@ -3,6 +3,7 @@ import pyrebase
 import streamlit as st
 from datetime import datetime
 from PIL import Image
+import base64
 
 # Load the fav icon image from the res folder in project
 img = Image.open('res/videoconference2.png')
@@ -85,6 +86,48 @@ if user_type_choice == 'Student':
     student_ID = st.sidebar.text_input('Please enter your student ID')
     session_code = st.sidebar.text_input('Please enter the session code')
     connectBtn = st.sidebar.button("Connect to Session")
+    
+    """### Share Your Impression""" 
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        feeling = st.radio('How are you feeling?',['😊Happy','🤔Confused', '😲Wow', '😂Amused', '😞Sad', '🧐Inquisitive', '😠Angry'])
+        
+    with col2:
+        if feeling == '😊Happy':
+            st.markdown('<h3 style="color: white; padding: 0">I\'m feeling Happy</h3>',
+                            unsafe_allow_html=True)
+            st.image("https://media.giphy.com/media/QWvra259h4LCvdJnxP/giphy.gif", width=150)
+
+        if feeling == '🤔Confused':
+            st.markdown('<h3 style="color: white; padding: 0">I\'m feeling Confused</h3>',
+                            unsafe_allow_html=True)
+            st.image("https://media.giphy.com/media/USUIWSteF8DJoc5Snd/giphy.gif", width=150)
+    
+        if feeling == '😲Wow':
+            st.markdown('<h3 style="color: white; padding: 0">I\'m feeling Wowed</h3>',
+                            unsafe_allow_html=True)
+            st.image("https://media.giphy.com/media/WprjTWyCWtfbJ11WEM/giphy.gif", width=150)
+        
+        if feeling == '😂Amused':
+            st.markdown('<h3 style="color: white; padding: 0">I\'m feeling Amused</h3>',
+                            unsafe_allow_html=True)
+            st.image("https://media.giphy.com/media/QX1vLPZxlUh1bzbgbq/giphy.gif", width=150)
+    
+        if feeling == '😞Sad':
+            st.markdown('<h3 style="color: white; padding: 0">I\'m feeling Sad</h3>',
+                            unsafe_allow_html=True)
+            st.image("https://media.giphy.com/media/IzcFv6WJ4310bDeGjo/giphy.gif", width=150)
+    
+        if feeling == '🧐Inquisitive':
+            st.markdown('<h3 style="color: white; padding: 0">I\'m feeling Inquisitive</h3>',
+                            unsafe_allow_html=True)
+            st.image("https://media.giphy.com/media/cOiuXv4agUAEa4EosP/giphy.gif", width=150)
+    
+        if feeling == '😠Angry':
+            st.markdown('<h3 style="color: white; padding: 0">I\'m feeling Angry</h3>',
+                            unsafe_allow_html=True)
+            st.image("https://media.giphy.com/media/j5E5qvtLDTfmHbT84Y/giphy.gif", width=150)
+    
 
 elif user_type_choice == 'Host/Teacher':
     # Authentication
@@ -96,7 +139,7 @@ elif user_type_choice == 'Host/Teacher':
 
     # Sign up Block
     if choice == 'Sign Up':
-        handle = st.sidebar.text_input('Please enter your full name')
+        handle = st.sidebar.text_input('Please enter your full name', value='')
         submit = st.sidebar.button('Create Host Account')
 
         if submit:
@@ -115,6 +158,8 @@ elif user_type_choice == 'Host/Teacher':
         login = st.sidebar.checkbox('Login')
         if login:
             user = auth.sign_in_with_email_and_password(email, password)
+            #if user['localId'] == '':
+                #st.sidebar.success('Incorrect login details entered. Please try again.')    
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
             bio = st.radio('Jump to',['Home','Workplace Feeds', 'Settings'])
             st.sidebar.success('Successfully authenticated...Welcome '+ email + '!')
@@ -130,7 +175,7 @@ elif user_type_choice == 'Host/Teacher':
                 """,
                 unsafe_allow_html=True
             )
-            
+        
     # SETTINGS PAGE 
             if bio == 'Settings':  
                 # CHECK FOR IMAGE
@@ -246,4 +291,5 @@ elif user_type_choice == 'Host/Teacher':
                             if all_posts.val() is not None:    
                                 for Posts in reversed(all_posts.each()):
                                     st.code(Posts.val(),language = '')
-
+        #else:
+            
