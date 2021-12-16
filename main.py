@@ -329,15 +329,32 @@ elif user_type_choice == 'Host/Teacher':
                 st.subheader('Create New Session')
                 session_code = secrets.token_hex(nbytes=3).upper()
                 st.write('**Session Code:** ' + session_code + ' _(Randomly generated)_')
-                session_name = st.text_input("Please enter a session name",max_chars = 100)
-                session_duration = st.selectbox('Choose Session Duration', ['1 Hour', '2 Hours', '3 Hours'])
-                session_date = st.date_input('Session Date', datetime.now())
-                session_time_start = st.time_input('What time will this session begin?', datetime.now())
-                session_time_end = st.time_input('What time will this session end?')
+                with st.form(key='sessionForm', clear_on_submit=True):
+                    session_name = st.text_input("Please enter a session name",max_chars = 100)
+                    session_duration = st.selectbox('Choose Session Duration', ['1 Hour', '2 Hours', '3 Hours'])
+                    session_date = st.date_input('Session Date', datetime.now())
+                    session_time_start = st.time_input('What time will this session begin?', datetime.now())
+                    session_time_end = st.time_input('What time will this session end?')
+                    #TODO
+                    create_session = st.form_submit_button('Create Session')
+                if create_session: 
+                    
+                    dt_string = session_date.strftime("%d/%m/%Y %H:%M:%S")
+                    ts_string = session_time_start.strftime("%H:%M:%S")  
+                    te_string = session_time_end.strftime("%H:%M:%S")  
+                    sessionInfo = {
+                    'Session Code': session_code,
+                    'Session Name': session_name,
+                    'Session Duration': session_duration,
 
-                create_session = st.button('Create Session')
-                if create_session:   
-                     st.balloons()
+                    'Session Date': dt_string,
+                    'Session Time Start': ts_string,
+                    'Session Time End': te_string
+                    }
+                    db.child("Sessions").push(sessionInfo)
+                    st.success('Session(' + session_code + ') Created Successfully!')  
+                    st.balloons()
+
                 
     # WORKPLACE FEED PAGE
             else:
