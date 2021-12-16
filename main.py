@@ -6,6 +6,10 @@ from PIL import Image
 import base64
 import datetime
 from datetime import datetime
+import time
+
+# Generates random strings
+import secrets
 
 # Load the fav icon image from the res folder in project
 img = Image.open('res/videoconference2.png')
@@ -112,11 +116,16 @@ if user_type_choice == 'Student':
             st.balloons()
             st.session_state.firstConnect += st.session_state.firstConnect + 1; 
         
-        st.title("Session Information")
+        st.title('Session('+ session_code + ') Information')
         col1, col2, col3 = st.columns(3)
         col1.metric("Session State", "Active")
         col2.metric("Session Duration", "1 Hour")
         col3.metric("Current Time", "59:20")
+
+        #my_bar = st.progress(0)
+        #for percent_complete in range(100):
+            #time.sleep(0.1)
+            #my_bar.progress(percent_complete + 1)
 
         st.title("Hi " + student_name) 
         """## Share Your Impression""" 
@@ -224,14 +233,22 @@ elif user_type_choice == 'Host/Teacher':
     # Login Block
     if choice == 'Login':
         login = st.sidebar.checkbox('Login')
+        if 'firstConnect' not in st.session_state:
+            st.session_state.firstConnect = 0
+
         if login:
             user = auth.sign_in_with_email_and_password(email, password)
             #if user['localId'] is None:
                 #st.sidebar.success('Incorrect login details entered. Please try again.')    
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-            bio = st.radio('Jump to',['Home','Workplace Feeds', 'Settings'])
+            page = st.radio('Jump to',['Home', 'Create Session', 'View Analytics', 'Settings'])
             st.sidebar.success('Connected...Welcome '+ email + '!')
-            st.balloons()
+            
+            # only display balloons animation once using Session State
+            if st.session_state.firstConnect == 0:
+                st.balloons()
+                st.session_state.firstConnect += st.session_state.firstConnect + 1; 
+        
             #Set background image
             st.markdown(
                 """
@@ -245,7 +262,7 @@ elif user_type_choice == 'Host/Teacher':
             )   
         
     # SETTINGS PAGE 
-            if bio == 'Settings':  
+            if page == 'Settings':  
                 # CHECK FOR IMAGE
                 nImage = db.child("Hosts").child(user['localId']).child("Image").get().val()    
                 # IMAGE FOUND     
@@ -285,9 +302,9 @@ elif user_type_choice == 'Host/Teacher':
     
     
     # HOME PAGE
-            elif bio == 'Home':
+            elif page == 'Home':
+                st.title('Hi ' + email)
                 col1, col2 = st.columns(2)
-                
                 # col for Profile picture
                 with col1:
                     nImage = db.child("Hosts").child(user['localId']).child("Image").get().val()         
@@ -297,26 +314,31 @@ elif user_type_choice == 'Host/Teacher':
                             img_choice = img.val()
                         st.image(img_choice,use_column_width=True)
                     else:
-                        st.info("No profile picture yet. Go to Edit Profile and choose one!")
-                    
-                    post = st.text_input("Let's share my current mood as a post!",max_chars = 100)
-                    add_post = st.button('Share Posts')
-                if add_post:   
-                    now = datetime.now()
-                    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")              
-                    post = {'Post:' : post,
-                            'Timestamp' : dt_string}                           
-                    results = db.child("Hosts").child(user['localId']).child("Posts").push(post)
-                    st.balloons()
+                        st.image('res/videoconference2.png',use_column_width=True)
+                        st.info("No profile picture set yet. Go to Settings and choose one!")
 
                 # This coloumn for the post Display
                 with col2:
-                    
                     all_posts = db.child("Hosts").child(user['localId']).child("Posts").get()
                     if all_posts.val() is not None:    
                         for Posts in reversed(all_posts.each()):
                                 #st.write(Posts.key()) # Morty
                                 st.code(Posts.val(),language = '') 
+            elif page == 'Create Session':
+                 # Create Session
+                st.subheader('Create New Session')
+                session_code = secrets.token_hex(nbytes=3).upper()
+                st.write('**Session Code:** ' + session_code + ' _(Randomly generated)_')
+                session_name = st.text_input("Please enter a session name",max_chars = 100)
+                session_duration = st.selectbox('Choose Session Duration', ['1 Hour', '2 Hours', '3 Hours'])
+                session_date = st.date_input('Session Date', datetime.now())
+                session_time_start = st.time_input('What time will this session begin?', datetime.now())
+                session_time_end = st.time_input('What time will this session end?')
+
+                create_session = st.button('Create Session')
+                if create_session:   
+                     st.balloons()
+                
     # WORKPLACE FEED PAGE
             else:
                 all_users = db.child("Hosts").get()
