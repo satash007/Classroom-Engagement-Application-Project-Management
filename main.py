@@ -87,7 +87,7 @@ if user_type_choice == 'Student':
     session_code = st.sidebar.text_input('Please enter the session code')
     connectBtn = st.sidebar.button("Connect to Session")
     
-    """### Share Your Impression""" 
+    """## Share Your Impression""" 
     col1, col2, col3, col4 = st.columns(4)
     with col1:
         feeling = st.radio('How are you feeling?',['😊Happy','🤔Confused', '😲Wow', '😂Amused', '😞Sad', '🧐Inquisitive', '😠Angry'])
@@ -128,6 +128,8 @@ if user_type_choice == 'Student':
                             unsafe_allow_html=True)
             st.image("https://media.giphy.com/media/j5E5qvtLDTfmHbT84Y/giphy.gif", width=150)
     
+
+    st.button('Submit Impression')
 
 elif user_type_choice == 'Host/Teacher':
     # Authentication
