@@ -129,7 +129,22 @@ if user_type_choice == 'Student':
             st.image("https://media.giphy.com/media/j5E5qvtLDTfmHbT84Y/giphy.gif", width=150)
     
 
-    st.button('Submit Impression')
+    choice = st.button('Submit Impression')
+    if choice:
+        now = datetime.now()
+        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")              
+        impression = {'Feeling:' : feeling,
+                'Timestamp' : dt_string}  
+        
+        studentInfo = {
+        'Student ID': student_ID,
+        'Student Name': student_name,
+        'Session Code': session_code,
+        'Impression': impression
+        }
+
+        db.child("Students").push(studentInfo)
+        st.balloons()
 
 elif user_type_choice == 'Host/Teacher':
     # Authentication
