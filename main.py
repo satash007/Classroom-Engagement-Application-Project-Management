@@ -4,6 +4,8 @@ import streamlit as st
 from datetime import datetime
 from PIL import Image
 import base64
+import datetime
+from datetime import datetime
 
 # Load the fav icon image from the res folder in project
 img = Image.open('res/videoconference2.png')
@@ -86,6 +88,10 @@ if user_type_choice == 'Student':
     student_ID = st.sidebar.text_input('Please enter your student ID')
     session_code = st.sidebar.text_input('Please enter the session code')
     connectBtn = st.sidebar.checkbox("Connect to Session")
+    
+
+    if 'firstConnect' not in st.session_state:
+        st.session_state.firstConnect = 0
 
     if connectBtn:
         st.sidebar.success('Connected...Welcome '+ student_name + '!')
@@ -101,13 +107,39 @@ if user_type_choice == 'Student':
             unsafe_allow_html=True
         )
 
-        st.balloons()
-    
+        # only display balloons animation once using Session State
+        if st.session_state.firstConnect == 0:
+            st.balloons()
+            st.session_state.firstConnect += st.session_state.firstConnect + 1; 
+        
+        st.title("Session Information")
+        col1, col2, col3 = st.columns(3)
+        col1.metric("Session State", "Active")
+        col2.metric("Session Duration", "1 Hour")
+        col3.metric("Current Time", "59:20")
+
+        st.title("Hi " + student_name) 
         """## Share Your Impression""" 
         col1, col2, col3, col4 = st.columns(4)
         with col1:
-            feeling = st.radio('How are you feeling?',['😊Happy','🤔Confused', '😲Wow', '😂Amused', '😞Sad', '🧐Inquisitive', '😠Angry'])
-            
+            feeling = st.radio('How are you feeling?',['😊Happy','🤔Confused', '😲Wowed', '😂Amused', '😞Sad', '🧐Inquisitive', '😠Angry'])
+            btnClickShareImpression = st.button('Submit Impression')
+            if btnClickShareImpression:
+                now = datetime.now()
+                dt_string = now.strftime("%d/%m/%Y %H:%M:%S")  
+                        
+                impression = {'Feeling' : feeling,
+                        'Timestamp' : dt_string}  
+                
+                studentInfo = {
+                'Student ID': student_ID,
+                'Student Name': student_name,
+                'Session Code': session_code,
+                'Impression': impression
+                }
+                db.child("Students").push(studentInfo)
+                st.balloons()
+
         with col2:
             if feeling == '😊Happy':
                 st.markdown('<h3 style="color: white; padding: 0">I\'m feeling Happy</h3>',
@@ -119,7 +151,7 @@ if user_type_choice == 'Student':
                                 unsafe_allow_html=True)
                 st.image("https://media.giphy.com/media/USUIWSteF8DJoc5Snd/giphy.gif", width=150)
         
-            if feeling == '😲Wow':
+            if feeling == '😲Wowed':
                 st.markdown('<h3 style="color: white; padding: 0">I\'m feeling Wowed</h3>',
                                 unsafe_allow_html=True)
                 st.image("https://media.giphy.com/media/WprjTWyCWtfbJ11WEM/giphy.gif", width=150)
@@ -145,21 +177,23 @@ if user_type_choice == 'Student':
                 st.image("https://media.giphy.com/media/j5E5qvtLDTfmHbT84Y/giphy.gif", width=150)
         
 
-        choice = st.button('Submit Impression')
-        if choice:
-            now = datetime.now()
-            dt_string = now.strftime("%d/%m/%Y %H:%M:%S")              
-            impression = {'Feeling' : feeling,
-                    'Timestamp' : dt_string}  
-            
-            studentInfo = {
-            'Student ID': student_ID,
-            'Student Name': student_name,
-            'Session Code': session_code,
-            'Impression': impression
-            }
+        
+        
+        with col3:
+            st.markdown('<h4 style="color: white; padding: 0">Impression Log:</h4>',
+                                unsafe_allow_html=True)
+            st.caption('Session Code: ' + session_code)
 
-            db.child("Students").push(studentInfo)
+            all_impressions = db.child("Students").get()
+            if all_impressions.val() is not None:    
+                for Posts in reversed(all_impressions.each()):
+                    #st.write(Posts.key()) # Morty
+                    if Posts.val()["Session Code"] == session_code:
+                        datetime_obj = datetime.strptime(Posts.val()["Impression"]["Timestamp"], 
+                                 "%d/%m/%Y %H:%M:%S")
+                        time = datetime_obj.time()
+                        #print(time)
+                        st.write('You were ' + Posts.val()["Impression"]["Feeling"] + ' at ', time, language = '')
     else:
         st.sidebar.info('Status: Not Connected.')        
 
@@ -196,7 +230,7 @@ elif user_type_choice == 'Host/Teacher':
                 #st.sidebar.success('Incorrect login details entered. Please try again.')    
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
             bio = st.radio('Jump to',['Home','Workplace Feeds', 'Settings'])
-            st.sidebar.success('Successfully authenticated...Welcome '+ email + '!')
+            st.sidebar.success('Connected...Welcome '+ email + '!')
             st.balloons()
             #Set background image
             st.markdown(
@@ -208,7 +242,7 @@ elif user_type_choice == 'Host/Teacher':
                 </style>
                 """,
                 unsafe_allow_html=True
-            )
+            )   
         
     # SETTINGS PAGE 
             if bio == 'Settings':  
@@ -325,5 +359,5 @@ elif user_type_choice == 'Host/Teacher':
                             if all_posts.val() is not None:    
                                 for Posts in reversed(all_posts.each()):
                                     st.code(Posts.val(),language = '')
-        #else:
-            
+        else:
+            st.sidebar.info('Status: Not Connected.')       
