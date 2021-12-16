@@ -133,7 +133,7 @@ if user_type_choice == 'Student':
     if choice:
         now = datetime.now()
         dt_string = now.strftime("%d/%m/%Y %H:%M:%S")              
-        impression = {'Feeling:' : feeling,
+        impression = {'Feeling' : feeling,
                 'Timestamp' : dt_string}  
         
         studentInfo = {
@@ -156,7 +156,7 @@ elif user_type_choice == 'Host/Teacher':
 
     # Sign up Block
     if choice == 'Sign Up':
-        handle = st.sidebar.text_input('Please enter your full name', value='')
+        name = st.sidebar.text_input('Please enter your full name', value='')
         submit = st.sidebar.button('Create Host Account')
 
         if submit:
@@ -165,9 +165,9 @@ elif user_type_choice == 'Host/Teacher':
             st.balloons()
             # Sign in
             user = auth.sign_in_with_email_and_password(email, password)
-            db.child(user['localId']).child("Handle").set(handle)
+            db.child("Hosts").child(user['localId']).child("fullName").set(name)
             db.child(user['localId']).child("ID").set(user['localId'])
-            st.title('Welcome ' + handle + '!')
+            st.title('Welcome ' + name + '!')
             st.info('Thank you for creating an account. To proceed, please login with the credentials chosen.')
 
     # Login Block
@@ -175,7 +175,7 @@ elif user_type_choice == 'Host/Teacher':
         login = st.sidebar.checkbox('Login')
         if login:
             user = auth.sign_in_with_email_and_password(email, password)
-            #if user['localId'] == '':
+            #if user['localId'] is None:
                 #st.sidebar.success('Incorrect login details entered. Please try again.')    
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
             bio = st.radio('Jump to',['Home','Workplace Feeds', 'Settings'])
@@ -196,11 +196,11 @@ elif user_type_choice == 'Host/Teacher':
     # SETTINGS PAGE 
             if bio == 'Settings':  
                 # CHECK FOR IMAGE
-                nImage = db.child(user['localId']).child("Image").get().val()    
+                nImage = db.child("Hosts").child(user['localId']).child("Image").get().val()    
                 # IMAGE FOUND     
                 if nImage is not None:
                     # We plan to store all our image under the child image
-                    Image = db.child(user['localId']).child("Image").get()
+                    Image = db.child("Hosts").child(user['localId']).child("Image").get()
                     for img in Image.each():
                         img_choice = img.val()
                         #st.write(img_choice)
@@ -215,7 +215,7 @@ elif user_type_choice == 'Host/Teacher':
                             uid = user['localId']
                             fireb_upload = storage.child(uid).put(newImgPath.getvalue(),user['idToken'])
                             a_imgdata_url = storage.child(uid).get_url(fireb_upload['downloadTokens']) 
-                            db.child(user['localId']).child("Image").push(a_imgdata_url)
+                            db.child("Hosts").child(user['localId']).child("Image").push(a_imgdata_url)
                             st.success('Success!') 
                 # IF THERE IS NO IMAGE
                 else:    
@@ -230,7 +230,7 @@ elif user_type_choice == 'Host/Teacher':
                         # Get the url for easy access
                         a_imgdata_url = storage.child(uid).get_url(fireb_upload['downloadTokens']) 
                         # Put it in our real time database
-                        db.child(user['localId']).child("Image").push(a_imgdata_url)
+                        db.child("Hosts").child(user['localId']).child("Image").push(a_imgdata_url)
     
     
     # HOME PAGE
@@ -239,9 +239,9 @@ elif user_type_choice == 'Host/Teacher':
                 
                 # col for Profile picture
                 with col1:
-                    nImage = db.child(user['localId']).child("Image").get().val()         
+                    nImage = db.child("Hosts").child(user['localId']).child("Image").get().val()         
                     if nImage is not None:
-                        val = db.child(user['localId']).child("Image").get()
+                        val = db.child("Hosts").child(user['localId']).child("Image").get()
                         for img in val.each():
                             img_choice = img.val()
                         st.image(img_choice,use_column_width=True)
@@ -255,13 +255,13 @@ elif user_type_choice == 'Host/Teacher':
                     dt_string = now.strftime("%d/%m/%Y %H:%M:%S")              
                     post = {'Post:' : post,
                             'Timestamp' : dt_string}                           
-                    results = db.child(user['localId']).child("Posts").push(post)
+                    results = db.child("Hosts").child(user['localId']).child("Posts").push(post)
                     st.balloons()
 
                 # This coloumn for the post Display
                 with col2:
                     
-                    all_posts = db.child(user['localId']).child("Posts").get()
+                    all_posts = db.child("Hosts").child(user['localId']).child("Posts").get()
                     if all_posts.val() is not None:    
                         for Posts in reversed(all_posts.each()):
                                 #st.write(Posts.key()) # Morty
@@ -270,9 +270,9 @@ elif user_type_choice == 'Host/Teacher':
             else:
                 all_users = db.get()
                 res = []
-                # Store all the users handle name
-                for users_handle in all_users.each():
-                    k = users_handle.val()["Handle"]
+                # Store all the users full name
+                for username in all_users.each():
+                    k = username.val()["fullName"]
                     res.append(k)
                 # Total users
                 nl = len(res)
@@ -284,19 +284,19 @@ elif user_type_choice == 'Host/Teacher':
                 
                 # Show the choosen Profile
                 if push:
-                    for users_handle in all_users.each():
-                        k = users_handle.val()["Handle"]
+                    for username in all_users.each():
+                        k = username.val()["fullName"]
                         # 
                         if k == choice:
-                            lid = users_handle.val()["ID"]
+                            lid = username.val()["ID"]
                             
-                            handlename = db.child(lid).child("Handle").get().val()             
+                            username = db.child("Hosts").child(lid).child("fullName").get().val()             
                             
-                            st.markdown(handlename, unsafe_allow_html=True)
+                            st.markdown(username, unsafe_allow_html=True)
                             
-                            nImage = db.child(lid).child("Image").get().val()         
+                            nImage = db.child("Hosts").child(lid).child("Image").get().val()         
                             if nImage is not None:
-                                val = db.child(lid).child("Image").get()
+                                val = db.child("Hosts").child(lid).child("Image").get()
                                 for img in val.each():
                                     img_choice = img.val()
                                     st.image(img_choice)
@@ -304,7 +304,7 @@ elif user_type_choice == 'Host/Teacher':
                                 st.info("No profile picture yet. Go to Edit Profile and choose one!")
     
                             # All posts
-                            all_posts = db.child(lid).child("Posts").get()
+                            all_posts = db.child("Hosts").child(lid).child("Posts").get()
                             if all_posts.val() is not None:    
                                 for Posts in reversed(all_posts.each()):
                                     st.code(Posts.val(),language = '')
