@@ -111,21 +111,69 @@ if user_type_choice == 'Student':
             unsafe_allow_html=True
         )
 
+        all_sessions = db.child("Sessions").get()
+        if all_sessions.val() is not None:    
+            for sessions in reversed(all_sessions.each()):
+                #st.write(Posts.key()) # Morty
+                if sessions.val()["Session Code"] == session_code:
+                    session_host_val = sessions.val()["Host"]
+                    datetime_obj = datetime.strptime(sessions.val()["Session Date"], 
+                                "%d/%m/%Y %H:%M:%S")
+                    start_time_obj = datetime.strptime(sessions.val()["Session Time Start"], 
+                                "%H:%M:%S")
+                    end_time_obj = datetime.strptime(sessions.val()["Session Time End"], 
+                                "%H:%M:%S")
+                   
+                    session_current_time = '-'
+                    session_state = '-'
+                    session_current_time_min = '-'
+                   
+                    if datetime.now().date() == datetime_obj.date():
+                      
+                        if  datetime.now().time().hour < start_time_obj.time().hour:
+                            session_current_time = '-'
+                            session_state = 'Not Started Yet'
+                            session_duration_val = sessions.val()["Session Duration"]
+                        elif datetime.now().time().hour > start_time_obj.time().hour and datetime.now().time().hour < end_time_obj.time().hour:
+                            session_current_time = str(end_time_obj.time().hour - datetime.now().time().hour) + 'hr'
+                            session_current_time_min = str(end_time_obj.time().minute - datetime.now().time().minute) + 'mins'
+                            session_state = 'Active'
+                            session_duration_val = sessions.val()["Session Duration"]
+                        else:
+                            session_current_time = '-'
+                            session_state = 'Ended'
+                            session_duration_val = sessions.val()["Session Duration"]
+
+                    if datetime.now().date() > datetime_obj.date():
+                        session_current_time = '-'
+                        session_state = 'Ended'
+                        session_duration_val = sessions.val()["Session Duration"]
+
+                    if datetime.now().date() < datetime_obj.date():
+                        session_current_time = '-'
+                        session_state = 'Not Started Yet'
+                        session_duration_val = sessions.val()["Session Duration"]
+
+
         # only display balloons animation once using Session State
         if st.session_state.firstConnect == 0:
             st.balloons()
             st.session_state.firstConnect += st.session_state.firstConnect + 1; 
         
+        session_remaining_time2 = end_time_obj.time().hour - datetime.now().time().hour
+        session_remaining_time = session_current_time + session_current_time_min
         st.title('Session('+ session_code + ') Information')
-        col1, col2, col3 = st.columns(3)
-        col1.metric("Session State", "Active")
-        col2.metric("Session Duration", "1 Hour")
-        col3.metric("Current Time", "59:20")
+        col1, col2, col3, col4 = st.columns(4)
+        col1.metric("Session State", session_state)
+        col2.metric("Session Duration", session_duration_val)
+        col3.metric("Remaining Time", str(session_remaining_time))
+        col4.metric("Hosted By", session_host_val)
 
-        #my_bar = st.progress(0)
-        #for percent_complete in range(100):
-            #time.sleep(0.1)
-            #my_bar.progress(percent_complete + 1)
+        st.markdown('<hr style="width:100%;text-align:left;margin:0; padding-top:0;">',unsafe_allow_html=True)
+        my_bar = st.progress(0)
+        for percent_complete in range(session_remaining_time2):
+            time.sleep(0.1)
+            my_bar.progress(percent_complete + 1)
 
         st.title("Hi " + student_name) 
         """## Share Your Impression""" 
@@ -185,9 +233,6 @@ if user_type_choice == 'Student':
                                 unsafe_allow_html=True)
                 st.image("https://media.giphy.com/media/j5E5qvtLDTfmHbT84Y/giphy.gif", width=150)
         
-
-        
-        
         with col3:
             st.markdown('<h4 style="color: white; padding: 0">Impression Log:</h4>',
                                 unsafe_allow_html=True)
@@ -216,7 +261,7 @@ elif user_type_choice == 'Host/Teacher':
 
     # Sign up Block
     if choice == 'Sign Up':
-        name = st.sidebar.text_input('Please enter your full name', value='')
+        name = st.sidebar.text_input('Please enter your full name')
         submit = st.sidebar.button('Create Host Account')
 
         if submit:
@@ -228,7 +273,7 @@ elif user_type_choice == 'Host/Teacher':
             db.child("Hosts").child(user['localId']).child("fullName").set(name)
             db.child("Hosts").child(user['localId']).child("ID").set(user['localId'])
             host_name = db.child("Hosts").child(user['localId']).child("fullName").get().key() 
-            st.title('Welcome ' + host_name + '!')
+            st.title('Welcome ' + name + '!')
             st.info('Thank you for creating an account. To proceed, please login with the credentials chosen.')
 
     # Login Block
@@ -244,7 +289,7 @@ elif user_type_choice == 'Host/Teacher':
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
             page = st.radio('Go to',['Home', 'Create Session', 'View Analytics', 'Settings'])
             host_name = db.child("Hosts").child(user['localId']).child("fullName").get().key() 
-            st.sidebar.success('Connected...Welcome '+ host_name + '!')
+            st.sidebar.success('Connected...Welcome '+ name + '!')
             
             # only display balloons animation once using Session State
             if st.session_state.firstConnect == 0:
@@ -329,11 +374,14 @@ elif user_type_choice == 'Host/Teacher':
             elif page == 'Create Session':
                  # Create Session
                 st.subheader('Create New Session')
-                session_code = secrets.token_hex(nbytes=3).upper()
+
+                #randomly generate session code using the token hex method of the secrets library
+                session_code = secrets.token_hex(nbytes=3).upper() 
+
                 st.write('**Session Code:** ' + session_code + ' _(Randomly generated)_')
                 with st.form(key='sessionForm', clear_on_submit=True):
                     session_name = st.text_input("Please enter a session name",max_chars = 100)
-                    session_duration = st.selectbox('Choose Session Duration', ['1 Hour', '2 Hours', '3 Hours'])
+                    session_duration = st.selectbox('Choose Session Duration', ['1 Hour', '2 Hours', '3 Hours', '4 Hours'])
                     session_date = st.date_input('Session Date', datetime.now())
                     session_time_start = st.time_input('What time will this session begin?', datetime.now())
                     session_time_end = st.time_input('What time will this session end?')
@@ -357,41 +405,42 @@ elif user_type_choice == 'Host/Teacher':
                     'Host Email': email
                     }
                     db.child("Sessions").push(sessionInfo)
+                    #print(sessionInfo)
                     st.success('Session(' + session_code + ') Created Successfully!')  
                     st.balloons()
 
                 
     # WORKPLACE FEED PAGE
             else:
-                all_users = db.child("Hosts").get()
+                all_users = db.child("Students").get()
                 res = []
                 # Store all the users full name
                 for username in all_users.each():
-                    k = username.val()["fullName"]
+                    k = username.val()["Student Name"]
                     res.append(k)
                 # Total users
-                nl = len(res)
-                st.write('Total users here: '+ str(nl)) 
+                totalStudents = len(res)
+                st.write('Total Students: '+ str(totalStudents)) 
                 
                 # Allow the user to choose which other user he/she wants to see 
-                choice = st.selectbox('My Collegues',res)
-                push = st.button('Show Profile')
+                choice = st.selectbox('Students List',res)
+                btnProfile = st.button('Show Profile')
                 
                 # Show the choosen Profile
-                if push:
+                if btnProfile:
                     for username in all_users.each():
-                        k = username.val()["fullName"]
+                        k = username.val()["Student Name"]
                         # 
                         if k == choice:
-                            lid = username.val()["ID"]
+                            lid = username.val()["Student ID"]
                             
-                            username = db.child("Hosts").child(lid).child("fullName").get().val()             
+                            #username = db.child("Students")..child("fullName").get().val()             
                             
                             st.markdown(username, unsafe_allow_html=True)
                             
-                            nImage = db.child("Hosts").child(lid).child("Image").get().val()         
+                            nImage = db.child("Students").child("Image").get().val()         
                             if nImage is not None:
-                                val = db.child("Hosts").child(lid).child("Image").get()
+                                val = db.child("Students").child("Image").get()  
                                 for img in val.each():
                                     img_choice = img.val()
                                     st.image(img_choice)
@@ -399,9 +448,9 @@ elif user_type_choice == 'Host/Teacher':
                                 st.info("No profile picture yet. Go to Edit Profile and choose one!")
     
                             # All posts
-                            all_posts = db.child("Hosts").child(lid).child("Posts").get()
+                            all_posts = db.child("Students").child("Impression").get()
                             if all_posts.val() is not None:    
                                 for Posts in reversed(all_posts.each()):
-                                    st.code(Posts.val(),language = '')
+                                    st.code(Posts.val()["Feeling"],language = '')
         else:
             st.sidebar.info('Status: Not Connected.')       
