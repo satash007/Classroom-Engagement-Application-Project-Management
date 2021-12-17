@@ -167,7 +167,7 @@ if user_type_choice == 'Student':
         col1.metric("Session State", session_state)
         col2.metric("Session Duration", session_duration_val)
         col3.metric("Remaining Time", str(session_remaining_time))
-        col4.metric("Hosted By", session_host_val)
+        col4.metric("Hosted By", 'John K.')
 
         st.markdown('<hr style="width:100%;text-align:left;margin:0; padding-top:0;">',unsafe_allow_html=True)
         my_bar = st.progress(0)
