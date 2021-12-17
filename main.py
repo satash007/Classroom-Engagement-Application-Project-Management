@@ -421,7 +421,7 @@ elif user_type_choice == 'Host/Teacher':
                     res.append(k)
                 # Total users
                 totalStudents = len(res)
-                st.write('Total Students: '+ str(totalStudents)) 
+                st.subheader('Total Students: '+ str(totalStudents)) 
                 
                 # Allow the user to choose which other user he/she wants to see 
                 choice = st.selectbox('Students List',res)
@@ -429,29 +429,11 @@ elif user_type_choice == 'Host/Teacher':
                 
                 # Show the choosen Profile
                 if btnProfile:
-                    for username in all_users.each():
-                        k = username.val()["Student Name"]
+                    for user in all_users.each():
+                        k = user.val()["Student Name"]
                         # 
                         if k == choice:
-                            lid = username.val()["Student ID"]
-                            
-                            #username = db.child("Students")..child("fullName").get().val()             
-                            
-                            st.markdown(username, unsafe_allow_html=True)
-                            
-                            nImage = db.child("Students").child("Image").get().val()         
-                            if nImage is not None:
-                                val = db.child("Students").child("Image").get()  
-                                for img in val.each():
-                                    img_choice = img.val()
-                                    st.image(img_choice)
-                            else:
-                                st.info("No profile picture yet. Go to Edit Profile and choose one!")
-    
-                            # All posts
-                            all_posts = db.child("Students").child("Impression").get()
-                            if all_posts.val() is not None:    
-                                for Posts in reversed(all_posts.each()):
-                                    st.code(Posts.val()["Feeling"],language = '')
+                            st.write('Student ID: ' + user.val()["Student ID"])
+                            st.write('Student Name: ' + user.val()["Student Name"])                                                      
         else:
             st.sidebar.info('Status: Not Connected.')       
