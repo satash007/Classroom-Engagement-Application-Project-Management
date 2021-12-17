@@ -289,7 +289,7 @@ elif user_type_choice == 'Host/Teacher':
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
             page = st.radio('Go to',['Home', 'Create Session', 'View Analytics', 'Settings'])
             host_name = db.child("Hosts").child(user['localId']).child("fullName").get().key() 
-            st.sidebar.success('Connected...Welcome '+ name + '!')
+            st.sidebar.success('Connected...Welcome '+ email + '!')
             
             # only display balloons animation once using Session State
             if st.session_state.firstConnect == 0:
@@ -350,7 +350,7 @@ elif user_type_choice == 'Host/Teacher':
     
     # HOME PAGE
             elif page == 'Home':
-                st.title('Hi ' + host_name + '!')
+                st.title('Hi ' + email + '!')
                 col1, col2 = st.columns(2)
                 # col for Profile picture
                 with col1:
