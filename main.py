@@ -114,9 +114,11 @@ if user_type_choice == 'Student':
         all_sessions = db.child("Sessions").get()
         if all_sessions.val() is not None:    
             for sessions in reversed(all_sessions.each()):
-                #st.write(Posts.key()) # Morty
+                
                 if sessions.val()["Session Code"] == session_code:
                     session_host_val = sessions.val()["Host"]
+                    #TODO
+                    print(session_host_val)
                     datetime_obj = datetime.strptime(sessions.val()["Session Date"], 
                                 "%d/%m/%Y %H:%M:%S")
                     start_time_obj = datetime.strptime(sessions.val()["Session Time Start"], 
@@ -167,7 +169,7 @@ if user_type_choice == 'Student':
         col1.metric("Session State", session_state)
         col2.metric("Session Duration", session_duration_val)
         col3.metric("Remaining Time", str(session_remaining_time))
-        col4.metric("Hosted By", 'John K.')
+        col4.metric("Hosted By", session_host_val)
 
         st.markdown('<hr style="width:100%;text-align:left;margin:0; padding-top:0;">',unsafe_allow_html=True)
         my_bar = st.progress(0)
@@ -272,8 +274,8 @@ elif user_type_choice == 'Host/Teacher':
             user = auth.sign_in_with_email_and_password(email, password)
             db.child("Hosts").child(user['localId']).child("fullName").set(name)
             db.child("Hosts").child(user['localId']).child("ID").set(user['localId'])
-            host_name = db.child("Hosts").child(user['localId']).child("fullName").get().key() 
-            st.title('Welcome ' + name + '!')
+            host_name = db.child("Hosts").child(user['localId']).child("fullName").get().val() 
+            st.title('Welcome ' + host_name + '!')
             st.info('Thank you for creating an account. To proceed, please login with the credentials chosen.')
 
     # Login Block
@@ -288,8 +290,8 @@ elif user_type_choice == 'Host/Teacher':
                 #st.sidebar.success('Incorrect login details entered. Please try again.')    
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
             page = st.radio('Go to',['Home', 'Create Session', 'View Analytics', 'Settings'])
-            host_name = db.child("Hosts").child(user['localId']).child("fullName").get().key() 
-            st.sidebar.success('Connected...Welcome '+ email + '!')
+            host_name = db.child("Hosts").child(user['localId']).child("fullName").get().val() 
+            st.sidebar.success('Connected...Welcome '+ host_name + '!')
             
             # only display balloons animation once using Session State
             if st.session_state.firstConnect == 0:
@@ -350,7 +352,7 @@ elif user_type_choice == 'Host/Teacher':
     
     # HOME PAGE
             elif page == 'Home':
-                st.title('Hi ' + email + '!')
+                st.title('Hi ' + host_name + '!')
                 col1, col2 = st.columns(2)
                 # col for Profile picture
                 with col1:
@@ -385,14 +387,13 @@ elif user_type_choice == 'Host/Teacher':
                     session_date = st.date_input('Session Date', datetime.now())
                     session_time_start = st.time_input('What time will this session begin?', datetime.now())
                     session_time_end = st.time_input('What time will this session end?')
-                    #TODO
                     create_session = st.form_submit_button('Create Session')
                 if create_session: 
                     
                     dt_string = session_date.strftime("%d/%m/%Y %H:%M:%S")
                     ts_string = session_time_start.strftime("%H:%M:%S")  
                     te_string = session_time_end.strftime("%H:%M:%S") 
-                    host_name = db.child("Hosts").child(user['localId']).child("fullName").get().key() 
+                    host_name = db.child("Hosts").child(user['localId']).child("fullName").get().val() 
                     sessionInfo = {
                     'Session Code': session_code,
                     'Session Name': session_name,
