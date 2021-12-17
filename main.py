@@ -289,7 +289,7 @@ elif user_type_choice == 'Host/Teacher':
             #if user['localId'] is None:
                 #st.sidebar.success('Incorrect login details entered. Please try again.')    
             st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-            page = st.radio('Go to',['Home', 'Create Session', 'View Analytics', 'Settings'])
+            page = st.radio('Go to',['Home', 'Create Session', 'View Analytics', 'Question Bank', 'Courses', 'Settings'])
             host_name = db.child("Hosts").child(user['localId']).child("fullName").get().val() 
             st.sidebar.success('Connected...Welcome '+ host_name + '!')
             
@@ -349,7 +349,73 @@ elif user_type_choice == 'Host/Teacher':
                         # Put it in our real time database
                         db.child("Hosts").child(user['localId']).child("Image").push(a_imgdata_url)
     
-    
+ # COURSE PAGE
+            elif page == 'Courses':
+               
+                  st.subheader ("Course Management")
+                  option = st.selectbox('',('Manage Courses','Your Courses', 'New Course'))
+                  
+                  if option == 'New Course':   
+                    course_name = st.text_input("Course Title", value='')
+                   
+                    if course_name is not None:
+                      teacher = db.child("Hosts").child(user['localId']).child("fullName").get().val()
+                      st.info ("Press Enter To Create New Course")
+                      courseInfo = {
+                                      'Course Title': course_name,
+                                      'Teacher': teacher,
+                                      }
+                      
+                      db.child("Courses").push(courseInfo)
+
+                  if option == 'Your Courses':
+                    st.subheader ("Your Courses")
+                    courses = db.child("Courses").get()
+                    for course in courses.each():
+                      if course.val()['Teacher'] == db.child("Hosts").child(user['localId']).child("fullName").get().val():
+                        st.info ( course.val()['Course Title'])
+                
+    # QUESTION BANK PAGE
+            elif page == 'Question Bank':
+              st.subheader ("Question Bank Management")
+              option = st.selectbox('',('Manage Question Bank','New Quiz','View Quizzes'))
+            
+              if option == 'New Quiz': 
+                  st.subheader("Quiz Form")
+                  with st.form(key='frmQuiz'):
+                    quiz_title = st.text_input("Quiz Title")
+                    
+                    options1 = []         
+                    courses = db.child("Courses").get()
+                    for course in courses.each():
+                      if course.val()['Teacher'] == db.child("Hosts").child(user['localId']).child("fullName").get().val():
+                        options1.append (course.val()['Course Title'])
+                  
+                    course_title = st.selectbox('Course Title', options1)
+                    
+                    submit_button = st.form_submit_button(label='Append Question') 
+                    #question_count = 1
+                  if submit_button:      
+                    with st.form(key='frmAddQuestion'):
+                        question = st.text_input("Question")
+                        option_a = st.text_input("Option A")
+                        option_b = st.text_input("Option B")
+                        option_c = st.text_input("Option C")
+                        #question_count += 1
+                        save_question = st.form_submit_button('Save Question') 
+                        if question is not None and option_a is not None and option_b is not None and option_c is not None and save_question:
+                          st.info(option_a)
+                          quizInfo = {
+                                        'Quiz Title': quiz_title,
+                                        'Course Title': course_title,
+                                        'Question': question,
+                                        'Option A': option_a,
+                                        'Option B': option_b,
+                                        'Option C': option_c
+                                     }
+                          st.info(quizInfo)        
+                          db.child("Quizzes").push(quizInfo)
+           
     # HOME PAGE
             elif page == 'Home':
                 st.title('Hi ' + host_name + '!')
