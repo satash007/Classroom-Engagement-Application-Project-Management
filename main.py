@@ -249,7 +249,7 @@ if user_type_choice == 'Student':
                                  "%d/%m/%Y %H:%M:%S")
                         time = datetime_obj.time()
                         #print(time)
-                        st.write('You were ' + Posts.val()["Impression"]["Feeling"] + ' at ', time, language = '')
+                        st.write(Posts.val()["Student Name"] + ' was ' + Posts.val()["Impression"]["Feeling"] + ' at ', time, language = '')
     else:
         st.sidebar.info('Status: Not Connected.')        
 
@@ -411,7 +411,7 @@ elif user_type_choice == 'Host/Teacher':
                     st.balloons()
 
                 
-    # WORKPLACE FEED PAGE
+    # VIEW ANALYTICS
             else:
                 all_users = db.child("Students").get()
                 res = []
