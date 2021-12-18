@@ -1,6 +1,5 @@
 # About this repo
   - This repository stores the codebase of a Classroom Engagement Application developed by a student group called Spartan Tech Solutions. 
-  
   ## Presentation Video
    - https://youtu.be/ZVNBD7R_xUI
   ## Deployed Application
