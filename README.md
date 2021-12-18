@@ -1,4 +1,4 @@
-# About
+# About this repo
   - This repository stores the codebase of a Classroom Engagement Application developed by a student group called Spartan Tech Solutions. 
 
 # Presentation Video
@@ -22,11 +22,12 @@
    - Allows a host/teacher to manage(create and append) questions within the application's question bank.​
 
 # How to run
-1. Follow installation guide at the link below
+1. Clone this repository in your IDE
+2. Follow installation guide at the link below to install Streamlit
     - https://docs.streamlit.io/library/get-started/installation
-2. Install Pyrebase Python Interface via Pip
+3. Install Pyrebase Python Interface via Pip
     - MacOSC Command: `pip install Pyrebase`
     - Windows command: `pip install pyrebase4`
-3. Navigate to project folder using `cd` command
-4. Run pipenv shell command: `pipenv shell`
-5. Run Streamlit app: `streamlit run main.py`
+4. Navigate to project folder using `cd` command
+5. Run pipenv shell command: `pipenv shell`
+6. Run Streamlit app: `streamlit run main.py`
