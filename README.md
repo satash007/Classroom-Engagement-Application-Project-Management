@@ -16,8 +16,8 @@
 1. Follow installation guide at the link below
     - https://docs.streamlit.io/library/get-started/installation
 2. Install Pyrebase Python Interface via Pip
-    - pip install Pyrebase
+    - MacOSC Command: `pip install Pyrebase`
     - Windows command: `pip install pyrebase4`
-3. Navigate to project folder using cd command
-4. Run pipenv shell command: pipenv shell
-5. Run Streamlit app: streamlit run main.py
+3. Navigate to project folder using `cd` command
+4. Run pipenv shell command: `pipenv shell`
+5. Run Streamlit app: `streamlit run main.py`
