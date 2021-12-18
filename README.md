@@ -17,9 +17,7 @@
     - https://docs.streamlit.io/library/get-started/installation
 2. Install Pyrebase Python Interface via Pip
     - pip install Pyrebase
-    - Windows commmand: pip install pyrebase4
-3. Install Tkinter 
-    - pip install tk
-4. Navigate to project folder using cd command
-5. Run pipenv shell command: pipenv shell
-6. Run Streamlit app: streamlit run main.py
+    - Windows command: '''pip install pyrebase4'''
+3. Navigate to project folder using cd command
+4. Run pipenv shell command: pipenv shell
+5. Run Streamlit app: streamlit run main.py
