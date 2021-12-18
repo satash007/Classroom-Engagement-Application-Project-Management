@@ -1,11 +1,12 @@
 # About this repo
   - This repository stores the codebase of a Classroom Engagement Application developed by a student group called Spartan Tech Solutions. 
-
-# Presentation Video
-  - https://youtu.be/ZVNBD7R_xUI
-  - 
-# Deployed Application
-   - https://share.streamlit.io/satash007/classroom-engagement-application-project-management/main/main.py
+  
+  ## Presentation Video
+    - https://youtu.be/ZVNBD7R_xUI
+  ## Deployed Application
+     - https://share.streamlit.io/satash007/classroom-engagement-application-project-management/main/main.py
+  ## Trello Board
+    - https://trello.com/b/54R4iWLk/classroom-engagement-application-project-management
 
 # Problem Description
 - Mr. Nicholas Mendez contracted Spartan Tech Solutions to develop a Classroom Engagement Application for the logging of student engagement during online learning sessions. Due to the covid-19 pandemic, the constraints of engaging with students as well as the feedback margin are two primary scopes that have evolved dramatically. The proposed application to be developed is a Classroom Engagement Application that would run in parallel with a video conferencing application (e.g. Zoom, Blackboard Collaborate) that has existing chat capabilities to allow students to be more engaged in online learning. ​
